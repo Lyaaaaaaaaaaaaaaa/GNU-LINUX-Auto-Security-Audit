@@ -6,6 +6,8 @@ Parameters : P_Parameter_Name
 functions  : Function_Name (see the function_header)
 
 After each update of a file, please update the file changelog (in the header)!
+I know many of these recommendations are impossible because of Bash's syntax, but
+try to be as close as possible ^^.
 
 align statements like this (exemple taken from Ada style guide.):
   #-- are comments
