@@ -35,6 +35,9 @@
 #--         readable.
 #--     - All the functions now use Write_Header and Write_Separator when
 #--         needed.
+#--     - Added in Check_Executable_Setuid_Root a link to the table of
+#--         recommendation for 41 executables with setuid root.
+#--     - Created Check_Accounts
 #---------------------------------------------------------------------------
 
 
@@ -372,6 +375,52 @@ function Check_Executable_Setuid_Root()
   Write_Report "chmod u-s <file> #Remove the setuid bit"
   Write_Report "chmod g-s <file> #Remove the setgid bit"
   Write_Report
+  Write_Report "Here is a list of recommendation from the ANSSI:"
+  Write_Report "https://github.com/Lyaaaaaaaaaaaaaaa/GNU-LINUX-Auto-Security-Audit/blob/master/Executables_Setuid_Root_Recommendation.md"
+  Write_Report
+}
+
+
+#---------------------------------------------------------------------------
+#-- Check_Accounts
+#--
+#-- Portability Issues:
+#--  -
+#--
+#-- Implementation Notes:
+#--  -
+#--
+#-- Anticipated Changes:
+#--  -
+#---------------------------------------------------------------------------
+
+function Check_Accounts()
+{
+  echo "Checking accounts"
+
+  Report_Name="Audit_Report_"$(date '+%d-%m-%y')
+
+  Write_Header "Accounts"
+  Write_Report "Service accounts must be disabled"
+  Write_Report "Disabling these accounts has no practical effect on the use of
+                the associated credentials (UID)."
+  Write_Report "This measure avoids the opening of a user session by a service
+                account."
+  Write_Report "It is important to note that some services can be declared with
+                the nobody account. When they are many to adopt such behavior,
+                they find themselves sharing the same account (and privileges)
+                at the operating system level."
+  Write_Report "A web server and a directory using nobody can therefore control
+                each other and alter the execution of the other: configuration
+                modification, sending signals, ptrace privileges, etc."
+  Write_Report
+  Write_Report "List of accounts:"
+
+  cat /etc/passwd >> $Report_Name
+
+  Write_Report
+  Write_Report "You can disable an account with the following command:"
+  Write_Report "sudo usermod --expiredate 1 peter"
 }
 
 
@@ -406,6 +455,7 @@ function Main()
   Check_Files_Editable_By_Everyone
   Check_Directories_Rights
   Check_Unowned_Files
+  Check_Accounts
 }
 
 Main
