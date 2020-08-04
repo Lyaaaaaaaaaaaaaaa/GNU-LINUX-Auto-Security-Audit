@@ -42,6 +42,9 @@
 #--
 #--   04/08/2020 Lyaaaaa
 #--     - Implemented Check_Session_Expiration
+#--     - Improved readability (reduced line length)
+#--     - Added another information about editing the Umask
+#--     - Wrote another command in Check_Executable_Setuid_Root's report
 #---------------------------------------------------------------------------
 
 
@@ -82,6 +85,7 @@ function  Check_Umask()
                     /etc/init.d/rc and the users umask in/etc/login.defs."
       Write_Report "On CentOS the system umask can be directly modified in
                     /etc/sysconfig/init and the users umask in/etc/login.defs."
+      Write_Report "You also can edit it in /etc/profile"
       Write_Report
 
     else
@@ -190,8 +194,9 @@ function Check_Unowned_Files()
 
   Write_Header "Unowned files"
   Write_Report "Files without a known owner may be incorrectly assigned to a
-                user when creating his account. Wemust therefore ensure that
-                no file is in this situation on the system"
+                user when creating his account."
+  Write_Report "We must therefore ensure that no file is in this situation on
+                the system"
   Write_Report
 
   Write_Report "Files with no owner or group assigned:"
@@ -225,7 +230,7 @@ function Check_Active_Processes()
   Write_Report "For each of the remaining services:"
   Write_Report "1. Update the program."
   Write_Report "2. Activation of partitioning measures (chroot, containers,
-                seccompfilters, etc."
+                seccompfilters, etc)."
   Write_Report "3. Removal of privileges when those of root are not required (by
                 creating an account dedicated to the service and configuring
                 it to use this account)."
@@ -293,10 +298,10 @@ function Check_Files_Editable_By_Everyone()
   Report_Name="Audit_Report_"$(date '+%d-%m-%y')
 
   Write_Header "Files editable by everyone "
-  Write_Report "No regular file needs to be modifiable by everyone. When a file
-                needs to be editable by multiple users or programs at the same
-                time, a group must be created and only this group must have
-                write rights to the said file"
+  Write_Report "No regular file needs to be modifiable by everyone."
+  Write_Report "When a file needs to be editable by multiple users or programs
+                at the same time, a group must be created and only this group
+                must have write rights to the said file"
 
   Write_Report
   Write_Report "Files editable by everyone: "
@@ -365,10 +370,11 @@ function Check_Executable_Setuid_Root()
 
   Write_Header "Executable with setuid and root as owner"
 
-  Write_Report "Setuid executables should be as few as possible. When it is
-                expected that only the administrators of the machine execute
-                them, the setuid bit must be removed and it is recommended to
-                prefer using commands like su or sudo, which can be monitored"
+  Write_Report "Setuid executables should be as few as possible."
+  Write_Report "When it is expected that only the administrators of the machine
+                execute them, the setuid bit must be removed."
+  Write_Report "It is recommended to prefer using commands like su or sudo,
+                which can be monitored"
   Write_Report
   Write_Report "List of your files with setuid/setgid bit: "
 
@@ -378,6 +384,8 @@ function Check_Executable_Setuid_Root()
   Write_Report "To remove setuid or setgid rights do:"
   Write_Report "chmod u-s <file> #Remove the setuid bit"
   Write_Report "chmod g-s <file> #Remove the setgid bit"
+  Write_Report "To remove both at same time:"
+  Write_Report "chmod gu-s <file>"
   Write_Report
   Write_Report "Here is a list of recommendation from the ANSSI:"
   Write_Report "https://github.com/Lyaaaaaaaaaaaaaaa/GNU-LINUX-Auto-Security-Audit/blob/master/Executables_Setuid_Root_Recommendation.md"
@@ -411,12 +419,14 @@ function Check_Accounts()
   Write_Report "This measure avoids the opening of a user session by a service
                 account."
   Write_Report "It is important to note that some services can be declared with
-                the nobody account. When they are many to adopt such behavior,
+                the nobody account."
+  Write_Report "When they are many to adopt such behavior,
                 they find themselves sharing the same account (and privileges)
                 at the operating system level."
   Write_Report "A web server and a directory using nobody can therefore control
-                each other and alter the execution of the other: configuration
-                modification, sending signals, ptrace privileges, etc."
+                each other and alter the execution of the other:"
+  Write_Report "configuration modification, sending signals, ptrace privileges,
+                etc."
   Write_Report
   Write_Report "List of accounts:"
 
