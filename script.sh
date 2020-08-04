@@ -38,6 +38,10 @@
 #--     - Added in Check_Executable_Setuid_Root a link to the table of
 #--         recommendation for 41 executables with setuid root.
 #--     - Created Check_Accounts
+#--     - Created Check_Session_Expiration
+#--
+#--   04/08/2020 Lyaaaaa
+#--     - Implemented Check_Session_Expiration
 #---------------------------------------------------------------------------
 
 
@@ -68,21 +72,21 @@ function  Check_Umask()
   Write_Header "Umask"
 
   if test $Recommended_User_Umask != $User_Umask
-  then
+    then
 
-    Write_Report "Your user's Umask is $User_Umask."
-    Write_Report "If it's 0022 (any file created is readable by all).
-                  I recommend setting it to 0077 (any file created by a user is
-                  readable and editable only by him)."
-    Write_Report "On Debian the system umask can be directly modified in
-                  /etc/init.d/rc and the users umask in/etc/login.defs."
-    Write_Report "On CentOS the system umask can be directly modified in
-                  /etc/sysconfig/init and the users umask in/etc/login.defs."
-    Write_Report
+      Write_Report "Your user's Umask is $User_Umask."
+      Write_Report "If it's 0022 (any file created is readable by all).
+                    I recommend setting it to 0077 (any file created by a user is
+                    readable and editable only by him)."
+      Write_Report "On Debian the system umask can be directly modified in
+                    /etc/init.d/rc and the users umask in/etc/login.defs."
+      Write_Report "On CentOS the system umask can be directly modified in
+                    /etc/sysconfig/init and the users umask in/etc/login.defs."
+      Write_Report
 
-  else
-    Write_Report "Your user's Umask is 0077. It's good"
-    Write_Report
+    else
+      Write_Report "Your user's Umask is 0077. It's good"
+      Write_Report
   fi
 
 }
@@ -425,6 +429,54 @@ function Check_Accounts()
 
 
 #---------------------------------------------------------------------------
+#-- Check_Session_Expiration
+#--
+#-- Portability Issues:
+#--  -
+#--
+#-- Implementation Notes:
+#--  - If the environnement variable TMOUT is not set, then the script guess
+#--      there is no session's expiration.
+#--
+#-- Anticipated Changes:
+#--  -
+#---------------------------------------------------------------------------
+
+function Check_Session_Expiration()
+{
+  echo "Checking session timeout"
+  Write_Header "Session timeout"
+
+  Timeout=$(printenv TMOUT)
+
+  if (test ! $Timeout)
+    then
+      Write_Report "You didn't set TMOUT."
+      Write_Report "You can set a timeout by doing this command and rebooting:"
+      Write_Report "echo TMOUT=120 >> /etc/environment"
+      Write_Report "You can set TMOUT to any time you want in secondes."
+
+  elif (test $Timeout -eq 0)
+    then
+      Write_Report "You disabled session timeout, you should re-activate it."
+      Write_Report "You can set a timeout by doing this command and rebooting:"
+      Write_Report "echo TMOUT=120 >> /etc/environment"
+      Write_Report "You can set TMOUT to any time you want in secondes."
+
+  elif (test $Timeout -gt 1000)
+    then
+      Write_Report "Your timeout is greater than 1000 secondes. You should
+                    reduce it."
+
+  else
+    Write_Report "Your timeout is $Timeout seconds, it's correctly set"
+
+  fi
+
+}
+
+
+#---------------------------------------------------------------------------
 #-- Main
 #--
 #-- Portability Issues:
@@ -452,10 +504,11 @@ function Main()
   Check_Active_Processes
   Check_Sensitive_Files
   Check_Executable_Setuid_Root
+  Check_Accounts
+  Check_Session_Expiration
   Check_Files_Editable_By_Everyone
   Check_Directories_Rights
   Check_Unowned_Files
-  Check_Accounts
 }
 
 Main
