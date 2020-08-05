@@ -48,6 +48,7 @@
 #--
 #--   05/08/2020 Lyaaaaa
 #--     - Created Check_For_Automatic_Update
+#--     - Created Check_Repositories
 #---------------------------------------------------------------------------
 
 
@@ -499,7 +500,7 @@ function Check_Session_Expiration()
 #--  -
 #--
 #-- Anticipated Changes:
-#--  - Add a check for equivalent for apt
+#--  - Add a check for apt equivalent
 #---------------------------------------------------------------------------
 
 function Check_For_Automatic_Update()
@@ -527,6 +528,40 @@ function Check_For_Automatic_Update()
     Write_Report "If you are on CentOS7 check for yum-cron."
 
   fi
+}
+
+
+#---------------------------------------------------------------------------
+#-- Check_Repositories
+#--
+#-- Portability Issues:
+#--  -
+#--
+#-- Implementation Notes:
+#--  -
+#--
+#-- Anticipated Changes:
+#--  - Add a check for apt equivalent
+#---------------------------------------------------------------------------
+
+function Check_Repositories()
+{
+  echo "Checking repositories."
+  Write_Header "Installed repositories"
+
+  Report_Name="Audit_Report_"$(date '+%d-%m-%y')
+
+  if [ -f /etc/dnf/dnfff.conf ]
+    then
+    dnf repolist >> $Report_Name
+  else
+    yum repolist >> $Report_Name
+  fi
+
+  Write_Report
+  Write_Report "Only up-to-date official repositories of the distribution
+                must be used."
+
 }
 
 
@@ -561,6 +596,7 @@ function Main()
   Check_Accounts
   Check_Session_Expiration
   Check_For_Automatic_Update
+  Check_Repositories
   Check_Files_Editable_By_Everyone
   Check_Directories_Rights
   Check_Unowned_Files
