@@ -45,6 +45,9 @@
 #--     - Improved readability (reduced line length)
 #--     - Added another information about editing the Umask
 #--     - Wrote another command in Check_Executable_Setuid_Root's report
+#--
+#--   05/08/2020 Lyaaaaa
+#--     - Created Check_For_Automatic_Update
 #---------------------------------------------------------------------------
 
 
@@ -487,6 +490,47 @@ function Check_Session_Expiration()
 
 
 #---------------------------------------------------------------------------
+#-- Check_For_Automatic_Update
+#--
+#-- Portability Issues:
+#--  -
+#--
+#-- Implementation Notes:
+#--  -
+#--
+#-- Anticipated Changes:
+#--  - Add a check for equivalent for apt
+#---------------------------------------------------------------------------
+
+function Check_For_Automatic_Update()
+{
+
+  echo "Checking for automatic update (yum-cron or dnf-automatic)."
+  Write_Header "Automatic updates"
+
+  if [ -f /etc/yum/yum-cron.conf ]
+    then
+      Write_Report "It looks like you have yum-cron installed."
+      Write_Report "Be sure to check the configuration files"
+
+  elif [ -f /etc/dnf/automatic.conf ]
+    then
+      Write_Report "It looks like you have dnf-automatic installed."
+      Write_Report "Be sure to check the configuration files and enable
+                    dnf-automatic.timer"
+
+  else
+    Write_Report "It looks like you don't have any automatic update."
+    Write_Report "It is recommended to have a regular update procedure."
+    Write_Report
+    Write_Report "If you are on CentOS8 check dnf-automatic."
+    Write_Report "If you are on CentOS7 check for yum-cron."
+
+  fi
+}
+
+
+#---------------------------------------------------------------------------
 #-- Main
 #--
 #-- Portability Issues:
@@ -516,6 +560,7 @@ function Main()
   Check_Executable_Setuid_Root
   Check_Accounts
   Check_Session_Expiration
+  Check_For_Automatic_Update
   Check_Files_Editable_By_Everyone
   Check_Directories_Rights
   Check_Unowned_Files
