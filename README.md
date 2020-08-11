@@ -8,6 +8,22 @@ It checks your Linux system and reports in a well formatted file what you should
 
 It is inspired by the [configuration recommendations of a GNU/Linux system](https://www.ssi.gouv.fr/en/guide/configuration-recommendations-of-a-gnulinux-system/) guide by the [ANSSI](https://www.ssi.gouv.fr/en) (the french National Agency of Information System Security) 
 
+## What does the script do?
+
+*The order is not relevant*
+
+- Check the Umask 
+- List the active processes (and processes listening on the network)
+- Check permission of sensitives files
+- List executable with Setuid and owned by root
+- List the accounts
+- Check the session expiration (TMOUT environnement variable)
+- Check for automatic update
+- List your enabled repositories
+- List files editables by everyone
+- List directories editables by everyone
+- Check unowned files
+
 ## How to use it?
 
 1. Give the executable right to the script `chmod +x script.sh`.
